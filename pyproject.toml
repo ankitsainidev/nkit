@@ -4,7 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["Ankit <ankitsaini100205@gmail.com>"]
 readme = "README.md"
-license = MIT
+license = "MIT"
 
 [tool.poetry.scripts]
 nkit = "nkit.main:app"
@@ -12,6 +12,9 @@ nkit = "nkit.main:app"
 [tool.poetry.dependencies]
 python = "^3.6"
 typer = {extras = ["all"], version = "^0.3.2"}
+httpx = "^0.16.1"
+dataset = "^1.3.2"
+arrow = "^0.17.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
