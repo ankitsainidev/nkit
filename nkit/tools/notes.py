@@ -49,10 +49,10 @@ def get_recent(limit: int=5) -> t.List[Note]:
 			id=result['id'],
 			ty=NoteType.__members__[result['ty']],
 			msg=result['msg'],
-			created_at=result['created_at'],
+			created_at=arrow.get(result['created_at']),
 			draft=result['draft'],
 			resources=result['resources'].split('\n'),
-			deadline=result['deadline'],
+			deadline=arrow.get(result['deadline']),
 			refer_id=result['refer_id']
 		))
 

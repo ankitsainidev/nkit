@@ -16,8 +16,9 @@ def show_notes(limit: int = 5, id: bool = typer.Option(False, "--id/--no-id")):
 		typer.secho("Can't find any notes on local storage")
 
 	for note in notes:
+		
 		timestamp = typer.style(str(note.created_at), fg=typer.colors.BLUE)
-		msg =  timestamp + "    " + note.msg
+		msg =  note.created_at.humanize() + "    " + note.msg
 
 		if id:
 			msg = f"{note.id} )  "  + msg
@@ -36,7 +37,8 @@ def create_note(msg: str, type: helper.NoteType = typer.Option("think")):
 	note = helper.Note(id=None,
 			ty=type,
 			msg=msg,
-			created_at=arrow.utcnow(),
+			#created_at=arrow.utcnow(),
+			created_at=arrow.Arrow(year=2019, month=2, day=3),
 			draft=True,
 			resources=[],
 			deadline=None,
