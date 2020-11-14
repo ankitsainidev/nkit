@@ -29,8 +29,7 @@ def note(note: str, type: NoteType = typer.Option("think")):
 
 
 @app.command("sync")
-def note():
+def sync():
 	return sync_status()
-
 
 

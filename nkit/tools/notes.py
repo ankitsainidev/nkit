@@ -2,16 +2,10 @@ from dataclasses import dataclass
 import typing as t
 import enum
 
-from ..storage.local import db as local_db
+from ..storage.local import SessionLocal, Note as DbNote, NoteType
 
 import arrow
 
-note_db = local_db["note"]
-class NoteType(enum.Enum):
-	task = "task"
-	update = "update"
-	habit = "habit"
-	think_block = "think"
 
 
 @dataclass
@@ -24,40 +18,52 @@ class Note:
 	resources: list
 	deadline: t.Optional[arrow.Arrow]
 	refer_id: t.Optional[int]
-	_db = note_db
+	completed: t.Optional[bool] = None
 
 	def save_note(self) -> int:
 		assert self.id is None, "already has an id"
-		self.id = self._db.insert(dict(
+		db = SessionLocal()
+		note = DbNote(
 			ty=self.ty.name,
 			msg=self.msg,
 			created_at=self.created_at.datetime,
 			draft=self.draft,
 			resources="\n".join(self.resources),
 			deadline=None if self.deadline is None else self.deadline.datetime,
+			completed=self.completed,
 			refer_id=self.refer_id
-		))
+		)
+		db.add(note)
+		db.commit()
+		db.refresh(note)
 
+		self.id = note.id
 		assert self.id is not None
-		return self.id
+		db.close()
+		return note.id
 
 def get_recent(limit: int=5) -> t.List[Note]:
-	results = note_db.find(order_by="-created_at", _limit=limit)
+	db = SessionLocal()
+	results = db.query(DbNote).order_by(DbNote.created_at.asc()).limit(limit).all()
 	notes = []
 	for result in results:
 		notes.append(Note(
-			id=result['id'],
-			ty=NoteType.__members__[result['ty']],
-			msg=result['msg'],
-			created_at=arrow.get(result['created_at']),
-			draft=result['draft'],
-			resources=result['resources'].split('\n'),
-			deadline=arrow.get(result['deadline']),
-			refer_id=result['refer_id']
+			id=result.id,
+			ty=result.ty,
+			msg=result.msg,
+			created_at=arrow.get(result.created_at),
+			draft=result.draft,
+			resources=result.resources.split('\n'),
+			deadline=arrow.get(result.deadline),
+			completed=result.completed,
+			refer_id=result.refer_id
 		))
-
-
+	db.close()
 	return notes
 
 def delete(id: int) -> bool:
-	return note_db.delete(id=id)
+	db = SessionLocal()
+	print("deleted: ",  db.query(DbNote).filter(DbNote.id==id).delete())
+	db.commit()
+	db.close()
+	return True

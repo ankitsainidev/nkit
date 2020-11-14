@@ -2,6 +2,7 @@ from typer.testing import CliRunner
 
 from nkit import __version__
 from nkit.main import app
+from nkit.storage.local import SessionLocal, Note as DbNote
 
 runner = CliRunner()
 
@@ -9,6 +10,9 @@ runner = CliRunner()
 def test_version():
     assert __version__ == '0.1.1'
 
+def setup_function():
+    db = SessionLocal()
+    db.query(DbNote).delete()
 
 def test_save():
     output = runner.invoke(app, ["note", "__test some note"])
