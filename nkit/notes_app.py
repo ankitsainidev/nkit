@@ -1,6 +1,9 @@
 import typer
 import arrow
-from .tools import notes as helper
+from .models import NoteCreate
+from .exceptions import CrudException
+from . import models
+from .storage.local import NoteDb
 from .utils import catch_error
 
 note_app = typer.Typer()
@@ -9,7 +12,8 @@ note_app = typer.Typer()
 @note_app.command("show")
 @catch_error
 def show_notes(limit: int = 5, id: bool = typer.Option(False, "--id/--no-id")):
-	notes = helper.get_recent(limit = limit)
+	with NoteDb() as db:
+		notes = db.get_recent(limit = limit)
 	notes = sorted(notes, key=lambda x: x.created_at)
 	
 	if len(notes) == 0:
@@ -27,13 +31,16 @@ def show_notes(limit: int = 5, id: bool = typer.Option(False, "--id/--no-id")):
 @note_app.command("remove")
 @catch_error
 def remove_note(id: int):
-	if not helper.delete(id=id):
-		typer.secho("No such id in database", fg=typer.colors.RED, bg=typer.colors.WHITE)
+	try:
+		with NoteDb() as db:
+			db.delete_by_id(id=id)
+	except CrudException as e:
+		typer.secho(str(e), fg=typer.colors.RED, bg=typer.colors.WHITE)
 
 @note_app.command("create")
 @catch_error
-def create_note(msg: str, type: helper.NoteType = typer.Option("think")):
-	note = helper.Note(id=None,
+def create_note(msg: str, type: models.NoteType = typer.Option("think")):
+	note = NoteCreate(
 			ty=type,
 			msg=msg,
 			created_at=arrow.utcnow(),
@@ -41,6 +48,9 @@ def create_note(msg: str, type: helper.NoteType = typer.Option("think")):
 			resources=[],
 			deadline=None,
 			refer_id=None)
-	note.save_note()
+
+	with NoteDb() as db:
+		db.insert(note)
+
 	typer.secho(f"Successfull {str(note.created_at)}", fg=typer.colors.GREEN)
 	typer.secho(msg, fg=typer.colors.BLUE)

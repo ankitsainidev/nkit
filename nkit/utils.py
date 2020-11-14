@@ -16,7 +16,7 @@ def catch_error(f):
 			f(*args, **kwargs)
 		except Exception as e:
 			typer.secho(f"Failure: {e}", fg=typer.colors.RED, err=True)
-			show_tb = typer.prompt(f"See full traceback? ([y, yes]/[n, any])", default="n") in ["y", "yes"]
+			show_tb = typer.prompt(f"See full traceback? ([y, yes]/[n, any])", default="n").lower() in ["y", "yes"]
 			if show_tb:
 				traceback.print_exc()
 			else:

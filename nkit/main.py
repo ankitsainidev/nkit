@@ -3,7 +3,7 @@ import typer
 from .utils import blocking_run
 
 from .notes_app import note_app, create_note
-from .tools.notes import NoteType
+from .models import NoteType
 from .sync_app import sync_app, sync_status
 
 app = typer.Typer()
