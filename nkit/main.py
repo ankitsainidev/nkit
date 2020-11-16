@@ -3,12 +3,14 @@ import typer
 from .utils import blocking_run
 
 from .notes_app import note_app, create_note
+from .keys_app import keys_app
 from .models import NoteType
 from .sync_app import sync_app, sync_status
 
 app = typer.Typer()
 
 app.add_typer(note_app, name="notes")
+app.add_typer(keys_app, name="keys")
 app.add_typer(sync_app, name="sync")
 
 
