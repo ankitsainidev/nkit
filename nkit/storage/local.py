@@ -98,7 +98,7 @@ class NoteDb(BaseDb):
 		self.db.commit()
 		self.db.refresh(db_note)
 		return db_note.to_pydantic()
-	
+
 	def get_recent(self, limit: int) -> t.List[models.Note]:
 		db_notes = self.db.query(Note).order_by(Note.created_at.desc()).limit(limit).all()
 		return [db_note.to_pydantic() for db_note in db_notes]
@@ -121,9 +121,11 @@ class SecretDb(BaseDb):
 		self.db.refresh(db_secret)
 		return db_secret.to_pydantic()
 
-	def titles(self, regex_pattern: str = "*") -> t.List[str]:
-		results = self.db.query(Secret).filter(Secret.title.op('regexp')(regex_pattern)).all()
-		return [result.title for result in results]
+	def titles(self, regex_pattern: t.Optional[str] = None) -> t.List[str]:
+		# TODO: see the sqlalchemy of doing this that works with sqlite3 and postgresql
+		import re
+		results = self.db.query(Secret).all()
+		return [result.title for result in results if regex_pattern is None or re.match(regex_pattern, result.title)]
 
 	def get_secret(self, title: str) -> t.Optional[models.Secret]:
 		result = self.db.query(Secret).filter(Secret.title==title).first()

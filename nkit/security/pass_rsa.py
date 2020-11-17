@@ -167,13 +167,14 @@ def encrypt(public_key: RSA.RsaKey, content: bytes) -> bytes:
 
 def decrypt(private_key: RSA.RsaKey, content: bytes) -> bytes:
 	cipher = PKCS1_v1_5.new(private_key)
-	# large length is necessary, because RSA generally cannot encrypt this long content
+	# large length is necessary, because RSA generally cannot encrypt this long content. so it will raise ValueError
 	# TODO: lookup about maximum length contraint
 	large_senintel = b"a"*2048*2048
-	original_content = cipher.decrypt(content, large_senintel) # type: ignore TODO: error in .pyi file
+	try:
+		original_content = cipher.decrypt(content, large_senintel) # type: ignore TODO: error in .pyi file
+	except ValueError:
+		raise ValueError("Either content is invalid or private key is wrong")
 
-	if original_content == large_senintel:
-		raise ValueError("Couldn't decrypt")
 	return original_content
 
 def encrypt_large(public_key: RSA.RsaKey, content: bytes) -> bytes:
