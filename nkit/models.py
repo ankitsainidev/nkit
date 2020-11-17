@@ -20,7 +20,15 @@ class NoteCreate(BaseModel):
 	completed: t.Optional[bool]
 
 	class Config:
+		# for arrow
 		arbitrary_types_allowed = True
 
 class Note(NoteCreate):
+	id: int
+
+class SecretCreate(BaseModel):
+	title: str
+	data: bytes
+
+class Secret(SecretCreate):
 	id: int
