@@ -20,7 +20,7 @@ def to_int(key: bytes) -> int:
 def rabinMiller(num: int, trials: int = 40) -> bool:
 	s = num - 1
 	t = 0
-	
+
 	while s % 2 == 0:
 		s = s // 2
 		t += 1
@@ -41,17 +41,17 @@ def is_prime(num: int) -> bool:
 	# TODO: do more checks
 	if (num < 2):
 		return False
-	lowPrimes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 
-	67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 
-	157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 
-	251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313,317, 331, 337, 347, 349, 
-	353, 359, 367, 373, 379, 383, 389, 397, 401, 409, 419, 421, 431, 433, 439, 443, 449, 
-	457, 461, 463, 467, 479, 487, 491, 499, 503, 509, 521, 523, 541, 547, 557, 563, 569, 
-	571, 577, 587, 593, 599, 601, 607, 613, 617, 619, 631, 641, 643, 647, 653, 659, 661, 
-	673, 677, 683, 691, 701, 709, 719, 727, 733, 739, 743, 751, 757, 761, 769, 773, 787, 
-	797, 809, 811, 821, 823, 827, 829, 839, 853, 857, 859, 863, 877, 881, 883, 887, 907, 
+	lowPrimes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61,
+	67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151,
+	157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241,
+	251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313,317, 331, 337, 347, 349,
+	353, 359, 367, 373, 379, 383, 389, 397, 401, 409, 419, 421, 431, 433, 439, 443, 449,
+	457, 461, 463, 467, 479, 487, 491, 499, 503, 509, 521, 523, 541, 547, 557, 563, 569,
+	571, 577, 587, 593, 599, 601, 607, 613, 617, 619, 631, 641, 643, 647, 653, 659, 661,
+	673, 677, 683, 691, 701, 709, 719, 727, 733, 739, 743, 751, 757, 761, 769, 773, 787,
+	797, 809, 811, 821, 823, 827, 829, 839, 853, 857, 859, 863, 877, 881, 883, 887, 907,
 	911, 919, 929, 937, 941, 947, 953, 967, 971, 977, 983, 991, 997]
-	
+
 	if num in lowPrimes:
 		return True
 	for prime in lowPrimes:
@@ -61,7 +61,7 @@ def is_prime(num: int) -> bool:
 
 def get_next_prime(num: int, cycle: bool = True) -> int:
 	assert num > 1
-	bit_length = len(bin(num)) - 2 
+	bit_length = len(bin(num)) - 2
 	max_for_bit_length = (1<<bit_length) - 1
 	min_for_bit_length = 1<<(bit_length -1)
 	prime_candidate = num +1
@@ -120,23 +120,23 @@ def generate_keys_from_primes(prime1: int, prime2: int) -> RSA.RsaKey:
 
 
 def generate_rsa_key(passphrase: bytes, key_len: int = 2048) -> RSA.RsaKey:
-	""" algorithm 
+	""" algorithm
 
 	passphrase ------------------------>   hash1 -----------------------> hash2
-					SHAKE256				|		   SHAKE256			   | 
-											|							   | 
-											| binary					   | binary 
-											|							   |  
+					SHAKE256				|		   SHAKE256			   |
+											|							   |
+											| binary					   | binary
+											|							   |
 											v							   v
-										  hash1b						 hash2b		  
-											|							   |  
+										  hash1b						 hash2b
+											|							   |
 											| next prime nubmer			   | next prime number
-											|							   |  
+											|							   |
 											v							   v
-										   prime1						  prime2  
-											|							   |  
+										   prime1						  prime2
+											|							   |
 											 ------------------------------
-														   |			   
+														   |
 														   v
 							generate public/private rsa key as usual based on these two primes
 
@@ -186,7 +186,7 @@ def encrypt_large(public_key: RSA.RsaKey, content: bytes) -> bytes:
 	assert hasattr(cipher, "nonce")
 	assert isinstance(cipher.nonce, bytes) # type: ignore pycryptodome: assert covers ^
 	return encrypt(public_key, aes_key) + tag + cipher.nonce + encoded_bytes # type: ignore pycryptodome: assert covers ^
-	
+
 def decrypt_large(private_key: RSA.RsaKey, content: bytes) -> bytes:
 	key_length = private_key._n.size_in_bytes() # type: ignore pycryptodome: _n is dynamically added
 	nonce_length = tag_length = 16
@@ -215,7 +215,7 @@ if __name__ == "__main__":
 	if len(sys.argv) != 3:
 		print("usage: security.py {{passphrase}} {{key_to_export: [private|public]}}")
 		exit()
-	
+
 	passphrase = sys.argv[1].encode("utf-8")
 	key = generate_rsa_key(passphrase)
 	if sys.argv[2] == "private":

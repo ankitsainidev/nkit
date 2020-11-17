@@ -5,7 +5,7 @@ import os
 from nkit import __version__
 from nkit.main import app
 from nkit.storage.local import SessionLocal, Note as DbNote
-from nkit.security.security import generate_rsa_key, encrypt, decrypt, encrypt_large, decrypt_large
+from nkit.security.pass_rsa import generate_rsa_key, encrypt, decrypt, encrypt_large, decrypt_large
 from nkit.constants import APP_DIR
 
 runner = CliRunner()
@@ -58,7 +58,7 @@ def test_key_gen():
 
     prev_keys = [] # loose check to check if two phrases have the same private key
     for key_phrase in ["Hello", "bye", "something on eth ", "sdfu#@4jodsfjo324"]:
-        # small key size makes the generation faster 
+        # small key size makes the generation faster
         # ideal for testing
         key1 = generate_rsa_key(key_phrase.encode("utf-8"), 512)
         key2 = generate_rsa_key(key_phrase.encode("utf-8"), 512)
