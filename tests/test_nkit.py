@@ -29,7 +29,7 @@ def setup_function():
 def test_environment():
     assert os.environ["TESTING"] == "1"
 
-def test_save():
+def test_note_save():
     output = runner.invoke(app, ["note", "__test some note"])
     assert output.exit_code == 0
     assert b"success" in output.stdout_bytes.lower()
@@ -50,7 +50,7 @@ def test_save():
 
 def test_multiple_save():
     for _ in range(5):
-        test_save()
+        test_note_save()
 
 def test_key_gen():
     # checks if there's any practically infeasible randomness in key generation
@@ -86,4 +86,5 @@ def test_encryption_decryption_large():
     encrypted = encrypt_large(key.publickey(), data)
     decrypted = decrypt_large(key, encrypted)
     assert data == decrypted
+
 
